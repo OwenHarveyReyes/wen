@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dodge the Bullies</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+  }
+  #gameTitle {
+    color: #ff4444;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px #ff0000, 2px 2px 0 #880000;
+    margin-bottom: 8px;
+    image-rendering: pixelated;
+  }
+  #uiBar {
+    width: 800px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #111122;
+    border: 2px solid #333366;
+    border-bottom: none;
+    color: #fff;
+    font-size: 13px;
+  }
+  #lives { color: #ff6666; font-size: 18px; }
+  #scoreDisplay { color: #ffdd44; }
+  #roundDisplay { color: #44ffcc; }
+  canvas {
+    display: block;
+    border: 3px solid #333366;
+    image-rendering: pixelated;
+    cursor: default;
+  }
+  #bottomBar {
+    width: 800px;
+    background: #111122;
+    border: 2px solid #333366;
+    border-top: none;
+    color: #aaa;
+    font-size: 11px;
+    text-align: center;
+    padding: 4px;
+    letter-spacing: 1px;
+  }
+  /* Upgrade overlay */
+  #upgradeOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.88);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  #upgradeOverlay.active { display: flex; }
+  #upgradeBox {
+    background: #0d0d2a;
+    border: 3px solid #4444ff;
+    padding: 30px 40px;
+    max-width: 640px;
+    width: 95%;
+    text-align: center;
+    box-shadow: 0 0 40px #2222ff88;
+  }
+  #upgradeTitle {
+    color: #ffdd44;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+    text-shadow: 0 0 10px #ffdd44;
+  }
+  #upgradeSubtitle {
+    color: #aaa;
+    font-size: 12px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  #upgradePoints {
+    color: #44ffcc;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .upgradeGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .upgradeBtn {
+    background: #111133;
+    border: 2px solid #4444aa;
+    color: #fff;
+    padding: 14px 10px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    transition: all 0.15s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .upgradeBtn:hover:not(:disabled) {
+    background: #222255;
+    border-color: #6666ff;
+    transform: scale(1.03);
+    box-shadow: 0 0 15px #4444ff55;
+  }
+  .upgradeBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .upgradeBtn .upg-icon { font-size: 22px; display: block; margin-bottom: 5px; }
+  .upgradeBtn .upg-name { color: #ffdd44; font-weight: bold; font-size: 13px; display: block; margin-bottom: 3px; }
+  .upgradeBtn .upg-desc { color: #aaa; font-size: 10px; line-height: 1.4; display: block; }
+  .upgradeBtn .upg-cost { color: #ff9944; font-size: 11px; position: absolute; top: 8px; right: 8px; }
+  .upgradeBtn .upg-lvl { color: #44ff88; font-size: 10px; position: absolute; bottom: 6px; right: 8px; }
+  #skipBtn {
+    margin-top: 18px;
+    background: transparent;
+    border: 1px solid #555;
+    color: #888;
+    padding: 8px 24px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  #skipBtn:hover { color: #aaa; border-color: #888; }
+</style>
+</head>
+<body>
+
+<div id="gameTitle">⚡ DODGE THE BULLIES ⚡</div>
+<div id="uiBar">
+  <div id="lives">❤️ ❤️</div>
+  <div id="scoreDisplay">SCORE: 0</div>
+  <div id="roundDisplay">ROUND 1</div>
+  <div id="pointsDisplay" style="color:#44ffcc">PTS: 0</div>
+</div>
+<canvas id="gameCanvas" width="800" height="550"></canvas>
+<div id="bottomBar">WASD / ARROW KEYS = MOVE &nbsp;|&nbsp; AUTO-AIM &amp; AUTO-FIRE &nbsp;|&nbsp; Q=SHIELD &nbsp;|&nbsp; E=TIMEWARP &nbsp;|&nbsp; R=AURA</div>
+
+<!-- Upgrade Overlay -->
+<div id="upgradeOverlay">
+  <div id="upgradeBox">
+    <div id="upgradeTitle">🎮 UPGRADE TIME!</div>
+    <div id="upgradeSubtitle">ROUND COMPLETE — CHOOSE YOUR POWER-UP</div>
+    <div id="upgradePoints">Available Points: <span id="upgPtsAmt">0</span></div>
+    <div class="upgradeGrid" id="upgradeGrid"></div>
+    <button id="skipBtn" onclick="closeUpgrade()">▷ SKIP</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const W = 800, H = 550;
+let gameState = 'playing'; // playing | dead | upgrading
+let score = 0;
+let upgradePoints = 0;
+let round = 1;
+let lives = 2;
+let frameCount = 0;
+let lastSpeedIncrease = 0;
+let baseEnemySpeed = 0.45;   // slow start
+let maxEnemySpeed = 1.8;     // human-average cap
+let spawnRate = 200;
+let minSpawnRate = 70;
+let roundTimer = 0;
+let roundDuration = 900;
+
+// Player stats (modified by upgrades)
+let player = {
+  x: 390, y: 270,
+  w: 20, h: 32,
+  vx: 0, vy: 0,
+  speed: 2.5,
+  jumping: false,
+  jumpVy: 0,
+  baseY: 270,
+  invincible: 0,
+  flashTimer: 0,
+  // upgrades
+  bulletSpeed: 5,
+  bulletDamage: 1,
+  bulletCooldown: 18,
+  lastShot: 0,
+  multiShot: 1,
+  shield: false,
+  shieldActive: false,
+  shieldCooldown: 0,
+  shieldMaxCooldown: 300,
+  magnet: false,
+  magnetRadius: 0,
+  slowField: false,
+  slowFieldActive: false,
+  slowFieldTimer: 0,
+  reflectBullets: false,
+  aura: false,
+  auraTimer: 0,
+  auraCooldown: 0,
+  auraMaxCooldown: 600
+};
+
+let keys = {};
+let bullets = [];        // player bullets
+let enemies = [];        // bully enemies
+let enemyBullets = [];   // bully words
+let particles = [];      // vfx
+let deathScreen = false;
+let deathTimer = 0;
+let scoreTimer = 0;
+
+// Upgrade system
+let upgrades = [
+  { id:'speed',       name:'SPEED BOOST',      icon:'👟', desc:'Move faster. Stack up to 3x.',            cost:30,  maxLvl:3,  lvl:0,
+    apply: ()=>{ player.speed += 0.7; } },
+  { id:'rapidfire',   name:'RAPID FIRE',        icon:'🔫', desc:'Shoot faster. Stack up to 4x.',           cost:25,  maxLvl:4,  lvl:0,
+    apply: ()=>{ player.bulletCooldown = Math.max(5, player.bulletCooldown - 4); } },
+  { id:'multishot',   name:'MULTI SHOT',        icon:'💥', desc:'Fire 3 bullets at once.',                 cost:50,  maxLvl:1,  lvl:0,
+    apply: ()=>{ player.multiShot = 3; } },
+  { id:'bulletspd',   name:'BULLET SPEED',      icon:'⚡', desc:'Bullets fly faster.',                    cost:20,  maxLvl:3,  lvl:0,
+    apply: ()=>{ player.bulletSpeed += 2; } },
+  { id:'damage',      name:'POWER SHOT',        icon:'💢', desc:'Each bullet does 2x damage.',            cost:45,  maxLvl:2,  lvl:0,
+    apply: ()=>{ player.bulletDamage += 1; } },
+  { id:'shield',      name:'PIXEL SHIELD',      icon:'🛡️', desc:'Press Q to activate a shield (300f cd).', cost:60, maxLvl:1,  lvl:0,
+    apply: ()=>{ player.shield = true; } },
+  { id:'magnet',      name:'POINT MAGNET',      icon:'🧲', desc:'Attract score pickups automatically.',   cost:35,  maxLvl:1,  lvl:0,
+    apply: ()=>{ player.magnet = true; player.magnetRadius = 80; } },
+  { id:'slowfield',   name:'TIME WARP',         icon:'🌀', desc:'Press E to slow all enemies for 5s.',    cost:70,  maxLvl:1,  lvl:0,
+    apply: ()=>{ player.slowField = true; } },
+  { id:'reflect',     name:'WORD REFLECT',      icon:'🪞', desc:'Your shield reflects enemy words.',      cost:80,  maxLvl:1,  lvl:0,
+    apply: ()=>{ player.reflectBullets = true; } },
+  { id:'aura',        name:'NERD AURA',         icon:'✨', desc:'Press R for a screen-clearing pulse.',   cost:90,  maxLvl:1,  lvl:0,
+    apply: ()=>{ player.aura = true; } },
+  { id:'extralife',   name:'EXTRA LIFE',        icon:'❤️', desc:'Gain an extra life (max 3).',            cost:100, maxLvl:2,  lvl:0,
+    apply: ()=>{ if(lives < 3) lives++; updateUI(); } },
+  { id:'bigbullet',   name:'MEGA ERASER',       icon:'📏', desc:'Bullets are bigger & pierce enemies.',   cost:55,  maxLvl:1,  lvl:0,
+    apply: ()=>{ player.bulletDamage += 2; player.piercing = true; } },
+];
+
+// ─── PIXEL ART DRAWERS ───────────────────────────────────────────────────────
+
+// School corridor background (pixel art style)
+function drawBackground() {
+  // ── Floor tiles (checkerboard) covering the whole arena ──
+  for(let y = 0; y < H; y += 32) {
+    for(let x = 0; x < W; x += 32) {
+      const even = ((x/32 + y/32) % 2 === 0);
+      ctx.fillStyle = even ? '#d6c9a8' : '#c9bc99';
+      ctx.fillRect(x, y, 32, 32);
+    }
+  }
+  // Grout lines
+  ctx.fillStyle = '#a89870';
+  for(let x = 0; x < W; x += 32) ctx.fillRect(x, 0, 1, H);
+  for(let y = 0; y < H; y += 32) ctx.fillRect(0, y, W, 1);
+
+  // ── Top wall band with lockers ──
+  const lockerH = 50, lockerW = 24;
+  // Top lockers
+  for(let x = 0; x < W; x += lockerW) {
+    ctx.fillStyle = x%(lockerW*2)===0 ? '#4a6fa5' : '#3d5c8a';
+    ctx.fillRect(x+1, 0, lockerW-2, lockerH);
+    ctx.fillStyle = '#2a3f5f';
+    ctx.fillRect(x+1, 0, 1, lockerH); ctx.fillRect(x+lockerW-2, 0, 1, lockerH);
+    ctx.fillRect(x+1, lockerH-1, lockerW-2, 1);
+    ctx.fillStyle = '#d4aa44'; ctx.fillRect(x+9, lockerH-18, 4, 5);
+    ctx.fillStyle = '#1a2f4a';
+    for(let s=0;s<2;s++) ctx.fillRect(x+4, 6+s*7, lockerW-9, 2);
+  }
+  // Bottom lockers
+  for(let x = 0; x < W; x += lockerW) {
+    ctx.fillStyle = x%(lockerW*2)===0 ? '#3d5c8a' : '#4a6fa5';
+    ctx.fillRect(x+1, H-lockerH, lockerW-2, lockerH);
+    ctx.fillStyle = '#2a3f5f';
+    ctx.fillRect(x+1, H-lockerH, 1, lockerH); ctx.fillRect(x+lockerW-2, H-lockerH, 1, lockerH);
+    ctx.fillRect(x+1, H-lockerH, lockerW-2, 1);
+    ctx.fillStyle = '#d4aa44'; ctx.fillRect(x+9, H-lockerH+12, 4, 5);
+    ctx.fillStyle = '#1a2f4a';
+    for(let s=0;s<2;s++) ctx.fillRect(x+4, H-lockerH+22+s*7, lockerW-9, 2);
+  }
+  // Left lockers (tall, vertical)
+  const lLockerH = 28;
+  for(let y = lockerH; y < H-lockerH; y += lLockerH) {
+    ctx.fillStyle = y%(lLockerH*2)===0 ? '#4a6fa5' : '#3d5c8a';
+    ctx.fillRect(0, y+1, 46, lLockerH-2);
+    ctx.fillStyle = '#2a3f5f';
+    ctx.fillRect(0, y+1, 46, 1); ctx.fillRect(0, y+lLockerH-2, 46, 1);
+    ctx.fillRect(45, y+1, 1, lLockerH-2);
+    ctx.fillStyle = '#d4aa44'; ctx.fillRect(34, y+lLockerH/2-2, 5, 4);
+    ctx.fillStyle = '#1a2f4a';
+    ctx.fillRect(6, y+6, 24, 2); ctx.fillRect(6, y+12, 24, 2);
+  }
+  // Right lockers
+  for(let y = lockerH; y < H-lockerH; y += lLockerH) {
+    ctx.fillStyle = y%(lLockerH*2)===0 ? '#3d5c8a' : '#4a6fa5';
+    ctx.fillRect(W-46, y+1, 46, lLockerH-2);
+    ctx.fillStyle = '#2a3f5f';
+    ctx.fillRect(W-46, y+1, 46, 1); ctx.fillRect(W-46, y+lLockerH-2, 46, 1);
+    ctx.fillRect(W-46, y+1, 1, lLockerH-2);
+    ctx.fillStyle = '#d4aa44'; ctx.fillRect(W-40, y+lLockerH/2-2, 5, 4);
+    ctx.fillStyle = '#1a2f4a';
+    ctx.fillRect(W-40, y+6, 24, 2); ctx.fillRect(W-40, y+12, 24, 2);
+  }
+
+  // ── Ceiling lights along top ──
+  for(let x = 100; x < W-60; x += 180) {
+    ctx.fillStyle = '#ffffcc';
+    ctx.fillRect(x, 2, 60, 8);
+    ctx.fillStyle = '#ffff88';
+    ctx.fillRect(x+2, 3, 56, 5);
+    ctx.fillStyle = 'rgba(255,255,180,0.06)';
+    ctx.fillRect(x-20, lockerH, 100, 60);
+  }
+
+  // ── Bulletin board center-left ──
+  ctx.fillStyle = '#8B4513';
+  ctx.fillRect(160, lockerH+10, 110, 70);
+  ctx.fillStyle = '#228B22';
+  ctx.fillRect(163, lockerH+13, 104, 64);
+  const papers = [[168,lockerH+18,28,18,'#fff'],[202,lockerH+18,22,16,'#ffe'],[170,lockerH+42,20,20,'#ffd'],[196,lockerH+40,26,18,'#fff']];
+  papers.forEach(([px,py,pw,ph,col])=>{
+    ctx.fillStyle=col; ctx.fillRect(px,py,pw,ph);
+    ctx.fillStyle='#ccc'; ctx.fillRect(px+2,py+4,pw-4,2); ctx.fillRect(px+2,py+8,pw-6,2);
+  });
+
+  // ── Graffiti sign ──
+  ctx.fillStyle = '#ff3333';
+  ctx.font = 'bold 8px Courier New';
+  ctx.fillText('★ BULLY ZONE ★', W/2-42, lockerH+28);
+
+  // ── Play area border highlight (where walls meet floor) ──
+  ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(46, lockerH, W-92, H-lockerH*2);
+
+  // ── Slight vignette at edges ──
+  const grad = ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.3, W/2,H/2,Math.max(W,H)*0.75);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.28)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+}
+
+// Draw Dexter (nerd protagonist) — pixel art style
+function drawDexter(x, y, invincible, flip) {
+  if(invincible > 0 && Math.floor(invincible/4)%2 === 0) return; // flash effect
+
+  const px = Math.floor(x), py = Math.floor(y);
+  ctx.save();
+  if(flip) { ctx.translate(px + 10, py); ctx.scale(-1,1); ctx.translate(-10, 0); }
+  else { ctx.translate(px, py); }
+
+  // Legs
+  ctx.fillStyle = '#1a4baa'; // blue jeans
+  ctx.fillRect(1, 22, 6, 10); // left leg
+  ctx.fillRect(10, 22, 6, 10); // right leg
+  ctx.fillStyle = '#ddd'; // sneakers
+  ctx.fillRect(0, 30, 7, 4);
+  ctx.fillRect(9, 30, 8, 4);
+  ctx.fillStyle = '#222';
+  ctx.fillRect(0, 32, 7, 2); ctx.fillRect(9, 32, 8, 2);
+
+  // Body — plaid shirt
+  ctx.fillStyle = '#cc3333'; // red plaid
+  ctx.fillRect(2, 12, 14, 12);
+  ctx.fillStyle = '#aa2222';
+  for(let ly=12;ly<24;ly+=4) ctx.fillRect(2, ly, 14, 1);
+  for(let lx=2;lx<16;lx+=4) ctx.fillRect(lx, 12, 1, 12);
+  // Pocket protector
+  ctx.fillStyle = '#fff'; ctx.fillRect(10, 13, 4, 5);
+  ctx.fillStyle = '#aaa'; ctx.fillRect(11,14,1,4); ctx.fillRect(12,14,1,4);
+
+  // Backpack
+  ctx.fillStyle = '#886633';
+  ctx.fillRect(-3, 12, 4, 10);
+  ctx.fillStyle = '#664422';
+  ctx.fillRect(-3,13,4,1); ctx.fillRect(-3,17,4,1);
+
+  // Neck
+  ctx.fillStyle = '#f5c8a0';
+  ctx.fillRect(7, 9, 4, 4);
+
+  // Head
+  ctx.fillStyle = '#f5c8a0';
+  ctx.fillRect(3, 1, 12, 10);
+
+  // Glasses (nerdy big ones)
+  ctx.fillStyle = '#222';
+  ctx.fillRect(3,4,5,1); ctx.fillRect(10,4,5,1); // top frames
+  ctx.fillRect(3,4,1,3); ctx.fillRect(7,4,1,3);  // left lens sides
+  ctx.fillRect(10,4,1,3); ctx.fillRect(14,4,1,3); // right lens sides
+  ctx.fillRect(3,6,5,1); ctx.fillRect(10,6,5,1); // bottom
+  ctx.fillRect(8,5,2,1); // nose bridge
+  // Lens tint
+  ctx.fillStyle = 'rgba(150,220,255,0.35)';
+  ctx.fillRect(4,5,4,2); ctx.fillRect(11,5,4,2);
+
+  // Hair (messy brown)
+  ctx.fillStyle = '#5c3300';
+  ctx.fillRect(3,1,12,3);
+  ctx.fillRect(2,2,2,4);
+  ctx.fillRect(14,2,2,3);
+  ctx.fillRect(5,0,2,2); ctx.fillRect(10,0,4,2);
+
+  // Ears
+  ctx.fillStyle = '#f5c8a0';
+  ctx.fillRect(2,4,1,3); ctx.fillRect(15,4,1,3);
+
+  // Mouth (nervous smile)
+  ctx.fillStyle = '#c08060';
+  ctx.fillRect(6,8,6,1);
+  ctx.fillStyle = '#d09070';
+  ctx.fillRect(6,8,1,1); ctx.fillRect(11,8,1,1);
+
+  // Bow tie
+  ctx.fillStyle = '#ff9933';
+  ctx.fillRect(6,11,3,2); ctx.fillRect(9,11,3,2);
+  ctx.fillStyle = '#ff6600';
+  ctx.fillRect(8,12,2,1);
+
+  // Arms
+  const wave = Math.sin(frameCount * 0.15) * 2;
+  ctx.fillStyle = '#cc3333';
+  ctx.fillRect(16, 13, 3, 7); // right arm
+  ctx.fillRect(-1, 13+wave, 3, 7); // left arm animated
+
+  ctx.restore();
+}
+
+// Bullet (eraser / paper ball)
+function drawBullet(b) {
+  ctx.save();
+  ctx.translate(Math.floor(b.x), Math.floor(b.y));
+  if(b.big) {
+    ctx.fillStyle = '#ff6644';
+    ctx.fillRect(-4,-3,8,6);
+    ctx.fillStyle = '#ff4422';
+    ctx.fillRect(-3,-2,6,4);
+    ctx.fillStyle = '#ffaa88';
+    ctx.fillRect(-2,-1,2,2);
+  } else {
+    ctx.fillStyle = '#ffcc44';
+    ctx.fillRect(-2,-2,4,4);
+    ctx.fillStyle = '#ffee88';
+    ctx.fillRect(-1,-1,2,2);
+  }
+  ctx.restore();
+}
+
+// Bully enemy pixel art
+function drawBully(e) {
+  const px = Math.floor(e.x), py = Math.floor(e.y);
+  const type = e.type; // 0,1,2 different bully designs
+
+  ctx.save();
+  ctx.translate(px, py);
+
+  const bounce = Math.sin(frameCount * 0.1 + e.phase) * 1.5;
+
+  if(type === 0) {
+    // Big bully - classic jock
+    // Legs
+    ctx.fillStyle = '#3a3a5a';
+    ctx.fillRect(2, 22+bounce, 7, 10);
+    ctx.fillRect(11, 22+bounce, 7, 10);
+    ctx.fillStyle = '#222';
+    ctx.fillRect(1, 30+bounce, 9, 4);
+    ctx.fillRect(10, 30+bounce, 9, 4);
+    // Body - letterman jacket
+    ctx.fillStyle = '#8B0000';
+    ctx.fillRect(1, 11+bounce, 18, 12);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(1, 11+bounce, 4, 12); // stripe
+    ctx.fillStyle = '#ffdd00';
+    ctx.fillRect(6, 14+bounce, 8, 5); // letter "B"
+    ctx.fillStyle = '#8B0000';
+    ctx.fillRect(8, 14+bounce, 2, 5);
+    // Arms
+    ctx.fillStyle = '#8B0000';
+    ctx.fillRect(-3, 12+bounce, 4, 9);
+    ctx.fillRect(19, 12+bounce, 4, 9);
+    // Fists
+    ctx.fillStyle = '#f5c090';
+    ctx.fillRect(-4, 20+bounce, 5, 4);
+    ctx.fillRect(19, 20+bounce, 5, 4);
+    // Neck
+    ctx.fillStyle = '#e5b070';
+    ctx.fillRect(7, 8+bounce, 6, 4);
+    // Head
+    ctx.fillStyle = '#e5b070';
+    ctx.fillRect(2, -1+bounce, 16, 12);
+    // Hair - buzzcut
+    ctx.fillStyle = '#2a1500';
+    ctx.fillRect(2, -1+bounce, 16, 3);
+    // Eyes (mean)
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(4, 3+bounce, 4, 3); ctx.fillRect(12, 3+bounce, 4, 3);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(5, 4+bounce, 2, 2); ctx.fillRect(13, 4+bounce, 2, 2);
+    // Eyebrows (angled mean)
+    ctx.fillStyle = '#1a0a00';
+    ctx.fillRect(4, 2+bounce, 4, 1); ctx.fillRect(12, 2+bounce, 4, 1);
+    ctx.fillRect(7, 1+bounce, 1, 1); ctx.fillRect(12, 1+bounce, 1, 1);
+    // Mouth smirk
+    ctx.fillStyle = '#b08060';
+    ctx.fillRect(6, 8+bounce, 8, 1);
+    ctx.fillRect(13, 7+bounce, 1, 2);
+  } else if(type === 1) {
+    // Mean girl bully
+    // Skirt
+    ctx.fillStyle = '#880088';
+    ctx.fillRect(1, 18+bounce, 16, 10);
+    // Legs
+    ctx.fillStyle = '#f5c8a0';
+    ctx.fillRect(3, 27+bounce, 5, 7);
+    ctx.fillRect(10, 27+bounce, 5, 7);
+    ctx.fillStyle = '#cc55cc';
+    ctx.fillRect(2, 32+bounce, 6, 4);
+    ctx.fillRect(10, 32+bounce, 6, 4);
+    // Top
+    ctx.fillStyle = '#ff55cc';
+    ctx.fillRect(2, 10+bounce, 14, 9);
+    // Arms
+    ctx.fillStyle = '#f5c8a0';
+    ctx.fillRect(-2, 11+bounce, 4, 9);
+    ctx.fillRect(16, 11+bounce, 4, 9);
+    // Phone in hand
+    ctx.fillStyle = '#333';
+    ctx.fillRect(16, 18+bounce, 4, 6);
+    ctx.fillStyle = '#44aaff';
+    ctx.fillRect(17, 19+bounce, 2, 4);
+    // Neck
+    ctx.fillStyle = '#f5c8a0';
+    ctx.fillRect(7, 7+bounce, 4, 4);
+    // Head
+    ctx.fillStyle = '#f5c8a0';
+    ctx.fillRect(3, -2+bounce, 12, 11);
+    // Ponytail
+    ctx.fillStyle = '#ffcc00';
+    ctx.fillRect(13, -2+bounce, 3, 14);
+    ctx.fillRect(14, 11+bounce, 2, 4);
+    ctx.fillStyle = '#ffaa00';
+    ctx.fillRect(3, -3+bounce, 12, 3);
+    // Eyes (catty)
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(5, 1+bounce, 3, 3); ctx.fillRect(10, 1+bounce, 3, 3);
+    ctx.fillStyle = '#330033';
+    ctx.fillRect(6, 2+bounce, 1, 2); ctx.fillRect(11, 2+bounce, 1, 2);
+    ctx.fillStyle = '#ff00ff';
+    ctx.fillRect(5, 1+bounce, 4, 1); ctx.fillRect(10, 1+bounce, 4, 1);
+    // Mouth
+    ctx.fillStyle = '#ff3366';
+    ctx.fillRect(6, 6+bounce, 6, 2);
+    ctx.fillStyle = '#ff6699';
+    ctx.fillRect(7, 6+bounce, 2, 1);
+  } else {
+    // Punk bully with mohawk
+    // Pants
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(2, 20+bounce, 6, 12);
+    ctx.fillRect(10, 20+bounce, 6, 12);
+    // Chain
+    ctx.fillStyle = '#aaa';
+    ctx.fillRect(4, 22+bounce, 10, 1);
+    ctx.fillRect(4, 25+bounce, 10, 1);
+    // Boots
+    ctx.fillStyle = '#111';
+    ctx.fillRect(1, 30+bounce, 8, 5);
+    ctx.fillRect(9, 30+bounce, 8, 5);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(1, 34+bounce, 8, 1); ctx.fillRect(9, 34+bounce, 8, 1);
+    // Jacket
+    ctx.fillStyle = '#111';
+    ctx.fillRect(1, 10+bounce, 16, 11);
+    ctx.fillStyle = '#ff2222';
+    ctx.fillRect(3, 12+bounce, 5, 2);
+    ctx.fillRect(3, 16+bounce, 5, 2);
+    ctx.fillRect(10, 12+bounce, 5, 2);
+    // Spikes on jacket
+    ctx.fillStyle = '#aaa';
+    for(let s=0;s<4;s++) ctx.fillRect(3+s*4, 10+bounce, 2, 2);
+    // Arms
+    ctx.fillStyle = '#111';
+    ctx.fillRect(-2, 11+bounce, 4, 8);
+    ctx.fillRect(16, 11+bounce, 4, 8);
+    // Hands
+    ctx.fillStyle = '#e5a070';
+    ctx.fillRect(-3, 18+bounce, 5, 4);
+    ctx.fillRect(16, 18+bounce, 5, 4);
+    // Neck
+    ctx.fillStyle = '#e5a070';
+    ctx.fillRect(7, 7+bounce, 4, 4);
+    // Head
+    ctx.fillStyle = '#e5a070';
+    ctx.fillRect(3, -1+bounce, 12, 9);
+    // Mohawk
+    const moColors = ['#ff0000','#ff7700','#ffff00','#00ff00','#0000ff'];
+    for(let m=0;m<5;m++) {
+      ctx.fillStyle = moColors[m];
+      ctx.fillRect(5+m*2, -5+bounce - m%2, 2, 6+m%2);
+    }
+    // Eyes
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(4, 2+bounce, 3, 3); ctx.fillRect(11, 2+bounce, 3, 3);
+    ctx.fillStyle = '#ff0000';
+    ctx.fillRect(5, 3+bounce, 1, 1); ctx.fillRect(12, 3+bounce, 1, 1);
+    // Dark circles
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(4, 2+bounce, 3, 3); ctx.fillStyle='#ff0000';
+    ctx.fillRect(5, 3+bounce, 1, 1); ctx.fillRect(12, 3+bounce, 1, 1);
+    // Mouth snarl
+    ctx.fillStyle = '#b07050';
+    ctx.fillRect(5, 6+bounce, 8, 1);
+    ctx.fillRect(5, 5+bounce, 2, 2);
+    ctx.fillRect(11, 5+bounce, 2, 2);
+    // Nose ring
+    ctx.fillStyle = '#aaa';
+    ctx.fillRect(8, 4+bounce, 2, 1);
+  }
+
+  // Health bar above bully
+  if(e.hp < e.maxHp) {
+    const bw = 20, bh = 3;
+    const bx = e.w/2 - bw/2;
+    ctx.fillStyle = '#500';
+    ctx.fillRect(bx, -8+bounce, bw, bh);
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(bx, -8+bounce, bw * (e.hp/e.maxHp), bh);
+  }
+
+  ctx.restore();
+}
+
+// Enemy word bullets (pixel art text style)
+function drawWordBullet(eb) {
+  ctx.save();
+  ctx.translate(Math.floor(eb.x), Math.floor(eb.y));
+  // Outline
+  ctx.fillStyle = eb.reflected ? '#00ff88' : '#ff2222';
+  ctx.font = `bold 9px "Courier New"`;
+  ctx.fillText(eb.word, -eb.word.length*3, 0);
+  // Shadow effect
+  ctx.fillStyle = eb.reflected ? '#004422' : '#440000';
+  ctx.fillText(eb.word, -eb.word.length*3+1, 1);
+  // Main text
+  ctx.fillStyle = eb.reflected ? '#88ffcc' : '#ff8888';
+  ctx.fillText(eb.word, -eb.word.length*3-1, -1);
+  ctx.restore();
+}
+
+// Particle effects
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = p.life / p.maxLife;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(Math.floor(p.x)-p.size/2, Math.floor(p.y)-p.size/2, p.size, p.size);
+    ctx.restore();
+  });
+}
+
+function spawnParticles(x, y, color, count=8, speed=2) {
+  for(let i=0;i<count;i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const spd = (Math.random()+0.5) * speed;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*spd,
+      vy: Math.sin(angle)*spd,
+      color, size: 2+Math.random()*3,
+      life: 30+Math.random()*20,
+      maxLife: 50
+    });
+  }
+}
+
+// Shield visual
+function drawShield() {
+  if(!player.shieldActive) return;
+  ctx.save();
+  ctx.strokeStyle = '#44aaff';
+  ctx.lineWidth = 2;
+  ctx.globalAlpha = 0.6 + Math.sin(frameCount*0.2)*0.2;
+  ctx.strokeRect(player.x - 5, player.y - 2, player.w + 10, player.h + 4);
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = '#44aaff';
+  ctx.fillRect(player.x - 5, player.y - 2, player.w + 10, player.h + 4);
+  ctx.restore();
+}
+
+// Slow field visual
+function drawSlowField() {
+  if(!player.slowField || player.slowFieldTimer <= 0) return;
+  ctx.save();
+  ctx.strokeStyle = '#aa44ff';
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.3 + Math.sin(frameCount*0.1)*0.1;
+  const r = 120;
+  ctx.beginPath();
+  ctx.arc(player.x + player.w/2, player.y + player.h/2, r, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.globalAlpha = 0.04;
+  ctx.fillStyle = '#aa44ff';
+  ctx.beginPath();
+  ctx.arc(player.x + player.w/2, player.y + player.h/2, r, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+// ─── GAME LOGIC ──────────────────────────────────────────────────────────────
+const badWords = [
+  'NERD!','LOSER!','FAI SCHIFO','BRUTTO!','SFIGATO!',
+  'GET LOST!','4 EYES!','DWEEB!','WEIRDO!','WIMP!',
+  'FREAK!','HA!HA!','UGLY!','CRINGE!','BOO!','GO HOME!'
+];
+
+function spawnEnemy() {
+  const type = Math.floor(Math.random()*3);
+  const w = 20, h = 38;
+  // Pick a random side: 0=top, 1=bottom, 2=left, 3=right
+  const side = Math.floor(Math.random()*4);
+  let ex, ey, dirX, dirY;
+  if(side === 0) {       // top
+    ex = Math.random() * (W - w); ey = -h;
+    dirX = 0; dirY = 1;
+  } else if(side === 1) { // bottom
+    ex = Math.random() * (W - w); ey = H + h;
+    dirX = 0; dirY = -1;
+  } else if(side === 2) { // left
+    ex = -w; ey = Math.random() * (H - h);
+    dirX = 1; dirY = 0;
+  } else {               // right
+    ex = W + w; ey = Math.random() * (H - h);
+    dirX = -1; dirY = 0;
+  }
+  enemies.push({
+    x: ex, y: ey,
+    w, h,
+    type, side,
+    phase: Math.random() * Math.PI * 2,
+    hp: 2 + round,
+    maxHp: 2 + round,
+    speed: baseEnemySpeed + Math.random()*0.2,
+    shootTimer: 80 + Math.floor(Math.random()*80),
+    shootCooldown: 110 + Math.floor(Math.random()*70),
+    dead: false,
+    wobble: Math.random() * 0.4 - 0.2,
+    initDirX: dirX, initDirY: dirY
+  });
+}
+
+function shootEnemy(e) {
+  const word = badWords[Math.floor(Math.random()*badWords.length)];
+  // Aim toward player
+  const dx = (player.x + player.w/2) - (e.x + e.w/2);
+  const dy = (player.y + player.h/2) - (e.y + e.h/2);
+  const dist = Math.sqrt(dx*dx+dy*dy) || 1;
+  const wSpeed = 1.2 + Math.random()*0.5;
+  enemyBullets.push({
+    x: e.x + e.w/2,
+    y: e.y + e.h/2,
+    vx: (dx/dist) * wSpeed + (Math.random()-0.5)*0.5,
+    vy: (dy/dist) * wSpeed + (Math.random()-0.5)*0.5,
+    word,
+    w: word.length * 5,
+    h: 10,
+    reflected: false
+  });
+}
+
+function autoShoot() {
+  if(frameCount - player.lastShot < player.bulletCooldown) return;
+  if(enemies.length === 0) return;
+
+  // Find nearest enemy
+  const pcx = player.x + player.w/2, pcy = player.y + player.h/2;
+  let nearest = null, nearestDist = Infinity;
+  enemies.forEach(e => {
+    const ex = e.x + e.w/2, ey = e.y + e.h/2;
+    const d = Math.sqrt((ex-pcx)**2 + (ey-pcy)**2);
+    if(d < nearestDist) { nearestDist = d; nearest = e; }
+  });
+  if(!nearest) return;
+
+  player.lastShot = frameCount;
+  const dx = (nearest.x + nearest.w/2) - pcx;
+  const dy = (nearest.y + nearest.h/2) - pcy;
+  const dist = Math.sqrt(dx*dx+dy*dy) || 1;
+  const nx = dx/dist, ny = dy/dist;
+
+  const angles = player.multiShot === 3 ? [-0.25, 0, 0.25] : [0];
+  angles.forEach(a => {
+    const cos = Math.cos(a), sin = Math.sin(a);
+    bullets.push({
+      x: pcx, y: pcy,
+      vx: (nx*cos - ny*sin) * player.bulletSpeed,
+      vy: (nx*sin + ny*cos) * player.bulletSpeed,
+      damage: player.bulletDamage,
+      big: player.piercing || false,
+      piercing: player.piercing || false,
+      w: player.piercing ? 8 : 4,
+      h: player.piercing ? 6 : 4
+    });
+  });
+  spawnParticles(pcx, pcy, '#ffcc44', 3, 2);
+}
+
+function auraBlast() {
+  if(!player.aura || player.auraCooldown > 0) return;
+  player.auraCooldown = player.auraMaxCooldown;
+  // Flash
+  spawnParticles(player.x+player.w/2, player.y+player.h/2, '#ffff88', 30, 5);
+  // Kill all on screen
+  enemies.forEach(e => {
+    e.hp = 0;
+    spawnParticles(e.x+e.w/2, e.y+e.h/2, '#ff4444', 12, 3);
+    gainPoints(e);
+  });
+  enemies = enemies.filter(e=>e.hp>0);
+  enemyBullets = [];
+}
+
+function gainPoints(e) {
+  const pts = 10 + round * 2;
+  score += pts;
+  upgradePoints += pts;
+  updateUI();
+  spawnParticles(e.x+e.w/2, e.y+e.h/2, '#ffdd44', 6, 2);
+}
+
+function checkCollisions() {
+  const px = player.x, py = player.y, pw = player.w, ph = player.h;
+
+  // Player bullets vs enemies
+  bullets.forEach(b => {
+    if(b.dead) return;
+    enemies.forEach(e => {
+      if(e.dead) return;
+      if(b.x > e.x && b.x < e.x+e.w && b.y > e.y && b.y < e.y+e.h) {
+        e.hp -= b.damage;
+        spawnParticles(b.x, b.y, '#ff8844', 5, 2);
+        if(!b.piercing) b.dead = true;
+        if(e.hp <= 0) {
+          e.dead = true;
+          gainPoints(e);
+          spawnParticles(e.x+e.w/2, e.y+e.h/2, '#ff3333', 12, 3);
+        }
+      }
+    });
+  });
+
+  // Enemy words vs player
+  if(player.invincible > 0) return;
+  enemyBullets.forEach(eb => {
+    if(eb.dead) return;
+    // Simple AABB
+    const ebl = eb.x - eb.w/2, ebr = eb.x + eb.w/2;
+    const ebt = eb.y - eb.h/2, ebb = eb.y + eb.h/2;
+    if(ebl < px+pw && ebr > px && ebt < py+ph && ebb > py) {
+      if(player.shieldActive) {
+        // Block / reflect
+        eb.dead = true;
+        if(player.reflectBullets) {
+          eb.dead = false;
+          eb.reflected = true;
+          eb.vy = -Math.abs(eb.vy) - 1;
+          eb.vx *= -1;
+        }
+        spawnParticles(eb.x, eb.y, '#44aaff', 8, 2);
+        return;
+      }
+      eb.dead = true;
+      hitPlayer();
+    }
+  });
+
+  // Reflected words vs enemies
+  enemyBullets.filter(eb=>eb.reflected).forEach(eb => {
+    enemies.forEach(e => {
+      if(e.dead) return;
+      if(eb.x > e.x && eb.x < e.x+e.w && eb.y > e.y && eb.y < e.y+e.h) {
+        e.hp -= 2;
+        eb.dead = true;
+        spawnParticles(eb.x, eb.y, '#00ff88', 6, 2);
+        if(e.hp <= 0) { e.dead=true; gainPoints(e); spawnParticles(e.x+e.w/2,e.y+e.h/2,'#ff3333',10,3); }
+      }
+    });
+  });
+}
+
+function hitPlayer() {
+  lives--;
+  player.invincible = 120;
+  player.jumpVy = -6;
+  player.jumping = true;
+  spawnParticles(player.x+player.w/2, player.y+player.h/2, '#ff0000', 15, 3);
+  updateUI();
+  if(lives <= 0) {
+    gameState = 'dead';
+    deathScreen = true;
+    deathTimer = 180;
+  }
+}
+
+document.addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if(e.key.toLowerCase() === 'q' && player.shield && player.shieldCooldown <= 0) {
+    player.shieldActive = true;
+    setTimeout(()=>{ player.shieldActive=false; player.shieldCooldown=player.shieldMaxCooldown; }, 2000);
+  }
+  if(e.key.toLowerCase() === 'e' && player.slowField && player.slowFieldTimer <= 0) {
+    player.slowFieldTimer = 300;
+  }
+  if(e.key.toLowerCase() === 'r' && player.aura && player.auraCooldown <= 0) {
+    auraBlast();
+  }
+  e.preventDefault();
+});
+document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+function updateUI() {
+  const heartsArr = [];
+  for(let i=0;i<lives;i++) heartsArr.push('❤️');
+  for(let i=lives;i<2+upgrades.find(u=>u.id==='extralife').lvl;i++) heartsArr.push('🖤');
+  document.getElementById('lives').textContent = heartsArr.join(' ');
+  document.getElementById('scoreDisplay').textContent = 'SCORE: '+score;
+  document.getElementById('roundDisplay').textContent = 'ROUND '+round;
+  document.getElementById('pointsDisplay').textContent = 'PTS: '+upgradePoints;
+}
+
+// ─── UPGRADE SYSTEM ──────────────────────────────────────────────────────────
+function showUpgrade() {
+  gameState = 'upgrading';
+  document.getElementById('upgPtsAmt').textContent = upgradePoints;
+  const grid = document.getElementById('upgradeGrid');
+  grid.innerHTML = '';
+  upgrades.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'upgradeBtn';
+    const canAfford = upgradePoints >= u.cost;
+    const maxed = u.lvl >= u.maxLvl;
+    btn.disabled = !canAfford || maxed;
+    btn.innerHTML = `
+      <span class="upg-cost">${maxed ? 'MAXED':'⭐'+u.cost}</span>
+      <span class="upg-icon">${u.icon}</span>
+      <span class="upg-name">${u.name}</span>
+      <span class="upg-desc">${u.desc}</span>
+      <span class="upg-lvl">${maxed?'★ MAX':'LV '+(u.lvl)+'→'+(u.lvl+1)}</span>`;
+    if(!maxed && canAfford) {
+      btn.onclick = () => {
+        upgradePoints -= u.cost;
+        u.lvl++;
+        u.cost = Math.floor(u.cost * 1.6);
+        u.apply();
+        updateUI();
+        closeUpgrade();
+      };
+    }
+    grid.appendChild(btn);
+  });
+  document.getElementById('upgradeOverlay').classList.add('active');
+}
+
+function closeUpgrade() {
+  document.getElementById('upgradeOverlay').classList.remove('active');
+  gameState = 'playing';
+  roundTimer = 0;
+}
+
+// ─── MAIN LOOP ────────────────────────────────────────────────────────────────
+function update() {
+  if(gameState === 'upgrading') return;
+  if(gameState === 'dead') {
+    deathTimer--;
+    if(deathTimer <= 0 && keys[' '] || deathTimer <= 0 && keys['enter']) restartGame();
+    return;
+  }
+
+  frameCount++;
+  roundTimer++;
+
+  // Speed scaling every 15 sec — gentle ramp, capped at maxEnemySpeed
+  if(frameCount - lastSpeedIncrease >= 900) {
+    lastSpeedIncrease = frameCount;
+    baseEnemySpeed = Math.min(maxEnemySpeed, baseEnemySpeed + 0.08);
+    spawnRate = Math.max(minSpawnRate, spawnRate - 8);
+  }
+
+  // Score tick (every 15 sec)
+  scoreTimer++;
+  if(scoreTimer >= 900) {
+    scoreTimer = 0;
+    score += 10;
+    upgradePoints += 10;
+    updateUI();
+  }
+
+  // Round progression
+  if(roundTimer >= roundDuration) {
+    round++;
+    roundTimer = 0;
+    score += round * 15;
+    upgradePoints += round * 15;
+    updateUI();
+    // Every 5 rounds, show upgrade + small speed bump
+    if(round % 5 === 0) {
+      baseEnemySpeed = Math.min(maxEnemySpeed, baseEnemySpeed + 0.12);
+      showUpgrade();
+      return;
+    }
+  }
+
+  // Player movement — free across the full arena
+  let mx = 0, my = 0;
+  if(keys['a']||keys['arrowleft']) mx -= player.speed;
+  if(keys['d']||keys['arrowright']) mx += player.speed;
+  if(keys['w']||keys['arrowup']) my -= player.speed;
+  if(keys['s']||keys['arrowdown']) my += player.speed;
+
+  player.x = Math.max(0, Math.min(W - player.w, player.x + mx));
+  player.y = Math.max(0, Math.min(H - player.h, player.y + my));
+
+  // Jump on hit (cosmetic only now — no floor constraint)
+  if(player.jumping) {
+    player.jumpVy += 0.35;
+    player.y += player.jumpVy;
+    if(player.jumpVy > 0) { player.jumping = false; player.jumpVy = 0; }
+  }
+  player.baseY = player.y;
+  if(player.invincible > 0) player.invincible--;
+
+  // Shield cooldown
+  if(player.shieldCooldown > 0) player.shieldCooldown--;
+  // Aura cooldown
+  if(player.auraCooldown > 0) player.auraCooldown--;
+  // Slow field
+  if(player.slowFieldTimer > 0) player.slowFieldTimer--;
+
+  // Spawn enemies
+  if(frameCount % spawnRate === 0) spawnEnemy();
+
+  // Auto-attack nearest enemy
+  autoShoot();
+
+  // Update enemies — walk toward player, with slight wobble perpendicular to direction
+  const slowMult = (player.slowFieldTimer > 0) ? 0.35 : 1;
+  const pcx = player.x + player.w/2, pcy = player.y + player.h/2;
+  enemies.forEach(e => {
+    const ex = e.x + e.w/2, ey = e.y + e.h/2;
+    const dx = pcx - ex, dy = pcy - ey;
+    const dist = Math.sqrt(dx*dx+dy*dy) || 1;
+    // Normalize and move
+    const nx = dx/dist, ny = dy/dist;
+    // Perpendicular wobble
+    const wobbleAmt = Math.sin(frameCount*0.06 + e.phase) * e.wobble;
+    e.x += (nx * e.speed + (-ny) * wobbleAmt) * slowMult;
+    e.y += (ny * e.speed + nx * wobbleAmt) * slowMult;
+    e.shootTimer -= slowMult;
+    if(e.shootTimer <= 0) {
+      shootEnemy(e);
+      e.shootTimer = e.shootCooldown;
+    }
+  });
+  // Remove enemies that went far off-screen (shouldn't happen with toward-player movement, but safety net)
+  enemies = enemies.filter(e => !e.dead && e.x > -100 && e.x < W+100 && e.y > -100 && e.y < H+100);
+
+  // Update bullets
+  bullets.forEach(b => { b.x += b.vx; b.y += b.vy; });
+  bullets = bullets.filter(b => !b.dead && b.x > -30 && b.x < W+30 && b.y > -30 && b.y < H+30);
+
+  // Update enemy bullets
+  enemyBullets.forEach(eb => { eb.x += eb.vx; eb.y += eb.vy; });
+  enemyBullets = enemyBullets.filter(eb => !eb.dead && eb.x > -60 && eb.x < W+60 && eb.y > -60 && eb.y < H+60);
+
+  // Particles
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.92; p.vy *= 0.92;
+    p.life--;
+  });
+  particles = particles.filter(p => p.life > 0);
+
+  checkCollisions();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  drawBackground();
+  drawSlowField();
+  drawParticles();
+
+  // Draw bullets
+  bullets.forEach(b => drawBullet(b));
+
+  // Draw enemy bullets
+  enemyBullets.forEach(eb => drawWordBullet(eb));
+
+  // Draw enemies
+  enemies.forEach(e => drawBully(e));
+
+  // Draw player — face nearest enemy, or face right if none
+  let flip = false;
+  if(enemies.length > 0) {
+    const pcx = player.x + player.w/2;
+    let nearest = null, nearestDist = Infinity;
+    enemies.forEach(e => {
+      const d = Math.sqrt((e.x+e.w/2-pcx)**2 + (e.y+e.h/2-(player.y+player.h/2))**2);
+      if(d < nearestDist) { nearestDist = d; nearest = e; }
+    });
+    if(nearest) flip = nearest.x + nearest.w/2 < pcx;
+  }
+  drawDexter(player.x, player.y, player.invincible, flip);
+  drawShield();
+
+  // Auto-aim indicator: dashed line to nearest enemy
+  if(enemies.length > 0 && gameState === 'playing') {
+    const pcx2 = player.x + player.w/2, pcy2 = player.y + player.h/2;
+    let nearest2 = null, nearestDist2 = Infinity;
+    enemies.forEach(e => {
+      const d = Math.sqrt((e.x+e.w/2-pcx2)**2 + (e.y+e.h/2-pcy2)**2);
+      if(d < nearestDist2) { nearestDist2 = d; nearest2 = e; }
+    });
+    if(nearest2) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,200,50,0.22)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 6]);
+      ctx.lineDashOffset = -(frameCount % 10);
+      ctx.beginPath();
+      ctx.moveTo(pcx2, pcy2);
+      ctx.lineTo(nearest2.x + nearest2.w/2, nearest2.y + nearest2.h/2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = 'rgba(255,80,80,0.55)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(nearest2.x - 2, nearest2.y - 2, nearest2.w + 4, nearest2.h + 4);
+      ctx.restore();
+    }
+  }
+
+  // Aura cooldown ring
+  if(player.aura) {
+    const prog = 1 - player.auraCooldown / player.auraMaxCooldown;
+    ctx.save();
+    ctx.strokeStyle = prog >= 1 ? '#ffff44' : '#554400';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    ctx.arc(player.x+player.w/2, player.y+player.h/2, 15, -Math.PI/2, -Math.PI/2 + Math.PI*2*prog);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Slow field timer bar
+  if(player.slowField) {
+    const prog = player.slowFieldTimer / 300;
+    ctx.fillStyle = '#33003a';
+    ctx.fillRect(10, H-16, 80, 6);
+    ctx.fillStyle = '#aa44ff';
+    ctx.fillRect(10, H-16, 80*prog, 6);
+    ctx.fillStyle = '#fff';
+    ctx.font = '7px Courier New';
+    ctx.fillText('TIME WARP', 14, H-4);
+  }
+
+  // Shield bar
+  if(player.shield) {
+    const prog = 1 - player.shieldCooldown / player.shieldMaxCooldown;
+    ctx.fillStyle = '#001a2a';
+    ctx.fillRect(100, H-16, 60, 6);
+    ctx.fillStyle = '#44aaff';
+    ctx.fillRect(100, H-16, 60*prog, 6);
+    ctx.fillStyle = '#fff';
+    ctx.font = '7px Courier New';
+    ctx.fillText('SHIELD', 103, H-4);
+  }
+
+  // Round timer bar
+  const rp = roundTimer / roundDuration;
+  ctx.fillStyle = '#111';
+  ctx.fillRect(W-90, H-16, 80, 6);
+  ctx.fillStyle = rp > 0.8 ? '#ff6644' : '#44ff88';
+  ctx.fillRect(W-90, H-16, 80*rp, 6);
+  ctx.fillStyle = '#fff';
+  ctx.font = '7px Courier New';
+  ctx.fillText('ROUND', W-88, H-4);
+
+  // Death screen
+  if(deathScreen && gameState === 'dead') {
+    ctx.fillStyle = 'rgba(0,0,0,0.88)';
+    ctx.fillRect(0,0,W,H);
+    const flash = Math.sin(frameCount * 0.1) > 0;
+    ctx.fillStyle = flash ? '#ff0000' : '#cc0000';
+    ctx.font = 'bold 72px "Courier New"';
+    ctx.textAlign = 'center';
+    ctx.fillText('DEATH', W/2+3, H/2+3);
+    ctx.fillStyle = '#ff4444';
+    ctx.fillText('DEATH', W/2, H/2);
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px "Courier New"';
+    ctx.fillText('SCORE: '+score, W/2, H/2+40);
+    ctx.fillStyle = '#aaa';
+    ctx.font = '11px "Courier New"';
+    ctx.fillText('PRESS SPACE TO RETRY', W/2, H/2+65);
+    ctx.textAlign = 'left';
+  }
+
+  // Upgrade hint
+  if(gameState === 'playing' && round > 1 && round % 5 === 0 && roundTimer < 60) {
+    ctx.fillStyle = '#ffdd44';
+    ctx.font = 'bold 14px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('★ UPGRADE ROUND ★', W/2, 30);
+    ctx.textAlign = 'left';
+  }
+}
+
+function restartGame() {
+  score = 0; upgradePoints = 0; round = 1; lives = 2;
+  frameCount = 0; lastSpeedIncrease = 0;
+  baseEnemySpeed = 0.45; spawnRate = 200;
+  roundTimer = 0; scoreTimer = 0;
+  enemies = []; bullets = []; enemyBullets = []; particles = [];
+  player.x = 390; player.y = 270;
+  player.speed = 2.5; player.bulletSpeed = 5;
+  player.bulletDamage = 1; player.bulletCooldown = 18;
+  player.multiShot = 1; player.shield = false;
+  player.shieldActive = false; player.shieldCooldown = 0;
+  player.magnet = false; player.slowField = false;
+  player.slowFieldTimer = 0; player.reflectBullets = false;
+  player.aura = false; player.auraCooldown = 0;
+  player.invincible = 0; player.piercing = false;
+  player.lastShot = 0;
+  upgrades.forEach(u => {
+    const base = {speed:30,rapidfire:25,multishot:50,bulletspd:20,damage:45,
+      shield:60,magnet:35,slowfield:70,reflect:80,aura:90,extralife:100,bigbullet:55};
+    u.cost = base[u.id] || 30; u.lvl = 0;
+  });
+  deathScreen = false; gameState = 'playing';
+  updateUI();
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+updateUI();
+loop();
+</script>
+</body>
+</html>
