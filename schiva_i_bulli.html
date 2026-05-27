@@ -159,7 +159,7 @@
 <div id="upgradeOverlay">
   <div id="upgradeBox">
     <div id="upgradeTitle">🎮 UPGRADE TIME!</div>
-    <div id="upgradeSubtitle">ROUND COMPLETE — CHOOSE YOUR POWER-UP</div>
+    <div id="upgradeSubtitle">ROUND COMPLETE — BUY AS MANY UPGRADES AS YOU CAN AFFORD</div>
     <div id="upgradePoints">Available Points: <span id="upgPtsAmt">0</span></div>
     <div class="upgradeGrid" id="upgradeGrid"></div>
     <button id="skipBtn" onclick="closeUpgrade()">▷ SKIP</button>
@@ -949,8 +949,7 @@ function updateUI() {
 }
 
 // ─── UPGRADE SYSTEM ──────────────────────────────────────────────────────────
-function showUpgrade() {
-  gameState = 'upgrading';
+function renderUpgradeGrid() {
   document.getElementById('upgPtsAmt').textContent = upgradePoints;
   const grid = document.getElementById('upgradeGrid');
   grid.innerHTML = '';
@@ -973,11 +972,17 @@ function showUpgrade() {
         u.cost = Math.floor(u.cost * 1.6);
         u.apply();
         updateUI();
-        closeUpgrade();
+        // Refresh the upgrade menu instead of closing it
+        renderUpgradeGrid();
       };
     }
     grid.appendChild(btn);
   });
+}
+
+function showUpgrade() {
+  gameState = 'upgrading';
+  renderUpgradeGrid();
   document.getElementById('upgradeOverlay').classList.add('active');
 }
 
