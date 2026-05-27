@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <!-- ✏️ MODIFICA: cambia il titolo con il tuo nome -->
   <title>Owen Reyes — Portfolio</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -14,10 +11,12 @@
 
 <body>
 
+  <!-- SFONDO ANIMATO CON BOLLE SFOCATE -->
+  <canvas id="bg-canvas"></canvas>
+
   <!-- NAVIGAZIONE -->
   <nav>
     <ul>
-      <!-- ✏️ puoi cambiare le voci del menu -->
       <li><a href="#hero">Home</a></li>
       <li><a href="#chi-sono">Chi sono</a></li>
       <li><a href="#competenze">Competenze</a></li>
@@ -31,22 +30,14 @@
 
   <main>
 
-    <!-- ==========================================
-         HERO — presentazione iniziale
-         ========================================== -->
+    <!-- HERO -->
     <section id="hero">
       <p class="etichetta">Portfolio</p>
-
-      <!-- ✏️ MODIFICA: il tuo nome e cognome -->
       <h1>Owen Reyes</h1>
-
-      <!-- ✏️ MODIFICA: una frase breve su di te -->
       <p class="sottotitolo">
         Studente di Informatica al terzo anno. Appassionato di programmazione,
         reti e tutto ciò che si può costruire con il codice.
       </p>
-
-      <!-- ✏️ MODIFICA: le parole chiave che ti descrivono -->
       <div class="tag-list">
         <span class="tag">Vestiti</span>
         <span class="tag">Web Design</span>
@@ -55,24 +46,18 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         CHI SONO
-         ========================================== -->
+    <!-- CHI SONO -->
     <section id="chi-sono">
       <p class="etichetta">Chi sono</p>
       <h2>Informazioni personali</h2>
-
-      <!-- ✏️ MODIFICA: scrivi qualcosa su di te -->
       <p style="margin-top: 16px;">
         Mi chiamo Owen Reyes, ho 17 anni e frequento il terzo anno
         dell'indirizzo Informatica. Sono curioso,
         mi piace risolvere problemi e imparare cose nuove.
         Nel tempo libero [scrivi qualcosa sui tuoi interessi].
       </p>
-
       <div class="griglia-2col" style="margin-top: 40px;">
         <div>
-          <!-- ✏️ MODIFICA: le tue informazioni -->
           <div class="info-riga">
             <span>Owen</span>
             <span>Owen Reyes</span>
@@ -111,103 +96,69 @@
       </div>
     </section>
 
-    <!-- ==========================================
-         COMPETENZE
-         ========================================== -->
+    <!-- COMPETENZE -->
     <section id="competenze">
       <p class="etichetta">Competenze</p>
       <h2>Cosa so fare</h2>
-      <p style="margin-top: 8px;">
-        Le competenze tecniche acquisite durante l'anno scolastico.
-      </p>
-
-      <!-- ✏️ MODIFICA: le tue competenze e il livello (da 0% a 100%) -->
+      <p style="margin-top: 8px;">Le competenze tecniche acquisite durante l'anno scolastico.</p>
       <div class="competenze-griglia">
-
         <div class="competenza-card">
           <h3>HTML / CSS</h3>
-          <div class="barra-contenitore">
-            <div class="barra" style="width: 65%"></div>
-          </div>
+          <div class="barra-contenitore"><div class="barra" style="width: 65%"></div></div>
           <p class="livello-label">Base/Intermedio</p>
         </div>
-
         <div class="competenza-card">
           <h3>Python</h3>
-          <div class="barra-contenitore">
-            <div class="barra" style="width: 30%"></div>
-          </div>
+          <div class="barra-contenitore"><div class="barra" style="width: 30%"></div></div>
           <p class="livello-label">Base</p>
         </div>
-
         <div class="competenza-card">
           <h3>Arduino</h3>
-          <div class="barra-contenitore">
-            <div class="barra" style="width: 20%"></div>
-          </div>
+          <div class="barra-contenitore"><div class="barra" style="width: 20%"></div></div>
           <p class="livello-label">Base</p>
         </div>
-
         <div class="competenza-card">
           <h3>Reti</h3>
-          <div class="barra-contenitore">
-            <div class="barra" style="width: 40%"></div>
-          </div>
+          <div class="barra-contenitore"><div class="barra" style="width: 40%"></div></div>
           <p class="livello-label">Base</p>
         </div>
-
         <div class="competenza-card">
           <h3>Sistemi operativi</h3>
-          <div class="barra-contenitore">
-            <div class="barra" style="width: 45%"></div>
-          </div>
+          <div class="barra-contenitore"><div class="barra" style="width: 45%"></div></div>
           <p class="livello-label">Base/Intermedio</p>
         </div>
-
-        <!-- ✏️ aggiungi altre competenze copiando il blocco sopra -->
-
       </div>
     </section>
 
-    <!-- ==========================================
-         PROGETTI
-         ========================================== -->
+    <!-- PROGETTI -->
     <section id="progetti">
       <p class="etichetta">Progetti</p>
       <h2>Cosa ho realizzato</h2>
-      <p style="margin-top: 8px;">
-        I progetti sviluppati durante l'anno scolastico.
-      </p>
+      <p style="margin-top: 8px;">I progetti sviluppati durante l'anno scolastico.</p>
 
       <div class="progetti-lista">
 
-        <!-- PROGETTO 1 — ✏️ MODIFICA con il tuo progetto -->
+        <!-- PROGETTO 1 — Semaforo -->
         <div class="progetto-card">
           <div class="progetto-immagine">
-            <!-- ✏️ sostituisci questo placeholder con un'immagine del progetto: -->
-            <img src="./img/semaforo.png" alt="Nome progetto" style="width:100%;height:100%;object-fit:cover;">
+            <img src="./img/semaforo.png" alt="Semaforo" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div class="progetto-corpo">
             <h2>Semaforo</h2>
             <p style="margin-top: 8px;">
               Questo progetto è una simulazione interattiva di un sistema semaforico (veicolare e pedonale sincronizzato) realizzato in Python con la libreria Turtle.
-
-            Controllando l'interfaccia direttamente da tastiera, posso far avanzare il ciclo dei colori (Spazio), attivare il lampeggio (A) o la modalità notturna (N). Inoltre, il programma registra in tempo reale lo storico degli stati in una lista, dimostrando l'uso pratico di funzioni, variabili globali e gestione degli eventi.
+              Controllando l'interfaccia direttamente da tastiera, posso far avanzare il ciclo dei colori (Spazio), attivare il lampeggio (A) o la modalità notturna (N). Inoltre, il programma registra in tempo reale lo storico degli stati in una lista, dimostrando l'uso pratico di funzioni, variabili globali e gestione degli eventi.
             </p>
             <div class="progetto-meta">
-              <!-- ✏️ aggiungi i linguaggi / strumenti usati -->
               <span class="badge">Python</span>
             </div>
-            <!-- ✏️ se hai un link al progetto, inseriscilo qui -->
-            <!-- <a href="#" class="progetto-link">→ Vedi il progetto</a> -->
           </div>
         </div>
 
-        <!-- PROGETTO 2 — ✏️ MODIFICA con il tuo progetto -->
+        <!-- PROGETTO 2 — Game Menu -->
         <div class="progetto-card">
           <div class="progetto-immagine">
-            <!-- ✏️ sostituisci questo placeholder con un'immagine del progetto: -->
-            <img src="./img/GoDot.png" alt="Nome progetto" style="width:100%;height:100%;object-fit:cover;">
+            <img src="./img/GoDot.png" alt="Game Menu" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div class="progetto-corpo">
             <h2>Game Menu</h2>
@@ -220,122 +171,95 @@
             </div>
           </div>
         </div>
-                <div class="progetto-card">
+
+        <!-- PROGETTO 3 — Dodge The Bullies (con pulsante!) -->
+        <div class="progetto-card">
           <div class="progetto-immagine">
-            <!-- ✏️ sostituisci questo placeholder con un'immagine del progetto: -->
-            <img src="./img/Bully.png" alt="Nome progetto" style="width:100%;height:100%;object-fit:cover;">
+            <img src="./img/Bully.png" alt="Dodge The Bullies" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div class="progetto-corpo">
             <h2>Dodge The Bullies</h2>
             <p style="margin-top: 8px;">
-              Con GoDot, abbiamo creato un menu interattivo per un ipotetico gioco, con navigazione mouse. Il progetto include una schermata principale con opzioni di "Start Game", "Options" e "Exit", ognuna con funzionalità di base implementate.
+              Un gioco arcade sviluppato in HTML5 e JavaScript puro. Il giocatore controlla un personaggio che deve schivare i bulli che avanzano verso di lui, raccogliendo oggetti utili per sopravvivere il più a lungo possibile. Il gioco aumenta progressivamente di difficoltà con ogni round, mettendo alla prova i riflessi del giocatore. Realizzato come progetto scolastico per affrontare il tema del bullismo in modo interattivo e consapevole.
             </p>
             <div class="progetto-meta">
-              <span class="badge">C# (C Sharp)</span>
-              <span class="badge">C++</span>
+              <span class="badge">HTML5</span>
+              <span class="badge">JavaScript</span>
+              <span class="badge">Canvas API</span>
             </div>
+            <a href="./schiva_i_bulli.html" class="btn-gioca" target="_blank">Provalo →</a>
           </div>
         </div>
 
-        <!-- ✏️ copia un blocco qui sopra per aggiungere altri progetti -->
-
       </div>
     </section>
-        <section id="percorso">
+
+    <!-- PERCORSO -->
+    <section id="percorso">
       <p class="etichetta">Percorso</p>
       <h2>Il mio percorso scolastico</h2>
-
       <p style="margin-top: 16px;">
         L'evento più significativo del mio percorso è stato il trasferimento di scuola. Il mio nuovo inizio risale a <strong>marzo 2024</strong>: sono convinto che, senza questa scelta, probabilmente non avrei continuato gli studi. Ho cambiato perché non mi sentivo più motivato e facevo fatica ad andare avanti — avevo bisogno di un ambiente in cui stare bene e ricominciare da zero.
       </p>
-
       <p style="margin-top: 12px;">
         Il trasferimento è stata una svolta importante, non solo scolastica ma anche personale: mi ha dato nuova motivazione e nuove opportunità. Un altro momento significativo è stata la <strong>formazione curriculare del terzo anno</strong>, durante la quale ho imparato concretamente come funziona un magazzino, la sua logistica e organizzazione — aspetti che si collegano direttamente al mio sogno: creare un mio brand di vestiti.
       </p>
-
       <p style="margin-top: 12px;">
         Tra gli aspetti più positivi ci sono le persone: professori e amici simpatici e disponibili che mi hanno supportato nei momenti difficili. Una delle sfide più grandi è stata imparare a comunicare con gli adulti, un problema nato già al liceo. Grazie all'esperienza in Immaginazione e Lavoro, ho lavorato su questo aspetto, migliorando gradualmente sicurezza e capacità relazionale.
       </p>
-
       <p style="margin-top: 12px;">
         Ogni esperienza, positiva o negativa, mi ha aiutato a crescere. Il mio obiettivo futuro è creare un brand di vestiti, e per arrivarci vorrei fare stage in <strong>Digital Marketing</strong>, <strong>E-Commerce</strong> o come <strong>Graphic Designer</strong>.
       </p>
-
       <div style="margin-top: 32px;">
-        <img
-          src="./img/Percorso-Scolastico.png"
-          alt="Percorso scolastico di Owen Reyes"
-          style="width: 100%; border-radius: 8px; border: 1px solid var(--bordo, #e2e8f0);"
-        />
+        <img src="./img/Percorso-Scolastico.png" alt="Percorso scolastico di Owen Reyes"
+          style="width: 100%; border-radius: 8px; border: 1px solid var(--bordo, #e2e8f0);" />
       </div>
     </section>
 
-    <!-- ==========================================
-         CV
-         ========================================== -->
+    <!-- CV -->
     <section id="cv">
       <p class="etichetta">Curriculum Vitae</p>
       <h2>Il mio CV</h2>
-      <p style="margin-top: 8px;">
-        Formazione, esperienze e competenze in formato sintetico.
-      </p>
-
-      <!-- BOTTONE DOWNLOAD PDF -->
+      <p style="margin-top: 8px;">Formazione, esperienze e competenze in formato sintetico.</p>
       <div class="cv-download-bar">
         <p>Scarica la versione completa in PDF.</p>
-        <!-- ✏️ MODIFICA: sostituisci "cv.pdf" con il nome del tuo file PDF -->
         <a href="./OWEN HARVEY REYES - CV (4).pdf" download="OwenReyes_CV.pdf" class="btn-scarica">
           ↓ &nbsp;Scarica CV (PDF)
         </a>
       </div>
-
-      <!-- FORMAZIONE -->
       <div class="cv-blocco">
         <p class="cv-blocco-titolo">Formazione</p>
-
-        <!-- ✏️ MODIFICA: il tuo percorso scolastico -->
         <div class="cv-riga">
           <span class="cv-periodo">2024 – oggi</span>
           <div class="cv-contenuto">
             <h3>Operatore Informatico</h3>
             <span class="cv-luogo">Immaginazione e Lavoro — Milano</span>
-            <p>Corso triennale ad indirizzo Informatica. Programmazione Python,
-               web design, Arduino, reti e sistemi operativi.</p>
+            <p>Corso triennale ad indirizzo Informatica. Programmazione Python, web design, Arduino, reti e sistemi operativi.</p>
           </div>
         </div>
-
         <div class="cv-riga">
           <span class="cv-periodo">2023 – 2024</span>
           <div class="cv-contenuto">
             <h3>Liceo Scientifico</h3>
             <span class="cv-luogo">Giulio Natta — Milano</span>
-            <p>Corso  quinquennale ad indirizzo Scientifico. Latino, Fisica.</p>
+            <p>Corso quinquennale ad indirizzo Scientifico. Latino, Fisica.</p>
           </div>
         </div>
-
         <div class="cv-riga">
           <span class="cv-periodo">2018 – 2023</span>
           <div class="cv-contenuto">
             <h3>Licenza Media</h3>
-            <!-- ✏️ MODIFICA: la tua scuola media -->
             <span class="cv-luogo">Scuola Secondaria di I grado — Milano</span>
             <p>Votazione: 8/10.</p>
           </div>
         </div>
-
-        <!-- ✏️ aggiungi altri blocchi copiando una cv-riga -->
       </div>
-
-      <!-- ESPERIENZE -->
       <div class="cv-blocco">
         <p class="cv-blocco-titolo">Esperienze</p>
-
-        <!-- ✏️ MODIFICA: aggiungi stage, lavori, volontariato, ecc. -->
-                 <div class="cv-riga">
+        <div class="cv-riga">
           <span class="cv-periodo">2025-2026</span>
           <div class="cv-contenuto">
             <h3>Stage / Progetto scolastico</h3>
-            <!-- ✏️ MODIFICA: azienda o contesto -->
             <span class="cv-luogo">Prestige Group S.r.L — Milano</span>
             <p>Riparazione e ricondizionamento di dispositivi elettronici.</p>
           </div>
@@ -344,20 +268,13 @@
           <span class="cv-periodo">2025</span>
           <div class="cv-contenuto">
             <h3>Stage / Progetto scolastico</h3>
-            <!-- ✏️ MODIFICA: azienda o contesto -->
             <span class="cv-luogo">CM.Consulting — Milano</span>
             <p>Agenzia di risorse umane, assistenza nella selezione e colloqui. Excel o Word.</p>
           </div>
         </div>
-
-        <!-- ✏️ se non hai esperienze lavorative ancora, puoi rimuovere
-             questa sezione o usarla per progetti extrascolastici -->
       </div>
-
-      <!-- COMPETENZE TECNICHE -->
       <div class="cv-blocco">
         <p class="cv-blocco-titolo">Competenze tecniche</p>
-        <!-- ✏️ MODIFICA: le tue competenze -->
         <div class="cv-skill-lista">
           <span class="cv-skill">Python</span>
           <span class="cv-skill">HTML / CSS</span>
@@ -367,82 +284,106 @@
           <span class="cv-skill">Windows</span>
         </div>
       </div>
-
-      <!-- LINGUE -->
       <div class="cv-blocco">
         <p class="cv-blocco-titolo">Lingue</p>
-
         <div class="cv-riga">
           <span class="cv-periodo">Filippino</span>
-          <div class="cv-contenuto">
-            <h3>Madrelingua</h3>
-          </div>
+          <div class="cv-contenuto"><h3>Madrelingua</h3></div>
         </div>
         <div class="cv-riga">
           <span class="cv-periodo">Italiano</span>
-          <div class="cv-contenuto">
-            <h3>Livello B1 - scolastico</h3>
-          </div>
+          <div class="cv-contenuto"><h3>Livello B1 - scolastico</h3></div>
         </div>
-
         <div class="cv-riga">
           <span class="cv-periodo">Inglese</span>
-          <div class="cv-contenuto">
-            <!-- ✏️ MODIFICA: il tuo livello -->
-            <h3>Livello B2 — scolastico</h3>
-          </div>
+          <div class="cv-contenuto"><h3>Livello B2 — scolastico</h3></div>
         </div>
-                <div class="cv-riga">
+        <div class="cv-riga">
           <span class="cv-periodo">Francese</span>
-          <div class="cv-contenuto">
-            <!-- ✏️ MODIFICA: il tuo livello -->
-            <h3>Livello A2 — base</h3>
-          </div>
+          <div class="cv-contenuto"><h3>Livello A2 — base</h3></div>
         </div>
       </div>
-
     </section>
 
-    <!-- ==========================================
-         CONTATTI
-         ========================================== -->
+    <!-- CONTATTI -->
     <section id="contatti">
       <p class="etichetta">Contatti</p>
       <h2>Dove trovarmi</h2>
-      <p style="margin-top: 8px;">
-        Puoi contattarmi tramite email o trovare i miei lavori online.
-      </p>
-
+      <p style="margin-top: 8px;">Puoi contattarmi tramite email o trovare i miei lavori online.</p>
       <div class="contatti-lista">
-
-        <!-- ✏️ MODIFICA: la tua email -->
-        <a href="/cdn-cgi/l/email-protection#3b4f4e5a7b5e565a525715524f" class="contatto-riga">
+        <a href="mailto:owenreyes1902@gmail.com" class="contatto-riga">
           <span class="contatto-icona">Email</span>
-          <span><span class="__cf_email__" data-cfemail="5d29283c1d38303c3431733429">owenreyes1902@gmail.com</span></span>
+          <span>owenreyes1902@gmail.com</span>
         </a>
-
-        <!-- ✏️ MODIFICA: il tuo profilo GitHub (se ce l'hai) -->
         <a href="https://github.com/OwenHarveyReyes" class="contatto-riga" target="_blank">
           <span class="contatto-icona">GitHub</span>
           <span>github.com/OwenHarveyReyes</span>
         </a>
-
-        <!-- ✏️ aggiungi altri link (LinkedIn, ecc.) copiando il blocco sopra
-             oppure cancella quelli che non usi -->
-
       </div>
     </section>
 
-
-
   </main>
 
-    <footer>
-    <!-- ✏️ MODIFICA: il tuo nome -->
+  <footer>
     © 2026 Owen Reyes — Portfolio scolastico
   </footer>
 
+  <!-- SCRIPT SFONDO BOLLE SFOCATE -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const blobs = Array.from({ length: 12 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 120 + Math.random() * 200,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      hue: 190 + Math.random() * 40,
+      alpha: 0.03 + Math.random() * 0.05,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.003 + Math.random() * 0.004
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      blobs.forEach(b => {
+        b.phase += b.speed;
+        b.x += b.vx + Math.sin(b.phase) * 0.3;
+        b.y += b.vy + Math.cos(b.phase * 0.7) * 0.3;
+
+        // wrap around
+        if (b.x < -b.r) b.x = canvas.width + b.r;
+        if (b.x > canvas.width + b.r) b.x = -b.r;
+        if (b.y < -b.r) b.y = canvas.height + b.r;
+        if (b.y > canvas.height + b.r) b.y = -b.r;
+
+        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        grad.addColorStop(0, `hsla(${b.hue}, 80%, 65%, ${b.alpha})`);
+        grad.addColorStop(0.5, `hsla(${b.hue + 15}, 70%, 55%, ${b.alpha * 0.5})`);
+        grad.addColorStop(1, `hsla(${b.hue}, 80%, 65%, 0)`);
+
+        ctx.filter = 'blur(40px)';
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+
+      ctx.filter = 'none';
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+
 </body>
 </html>
-<!-- index.html
-Visualizzazione di index.html. -->
