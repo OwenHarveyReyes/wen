@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Owen Reyes — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ANIMATED BLURRED BUBBLE BACKGROUND -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <ul>
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About me</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#journey">Journey</a></li>
+      <li><a href="#contacts">Contacts</a></li>
+      <li><a href="#cv">CV</a></li>
+      <li><a href="./stage_en.html">Internship</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- HERO -->
+    <section id="hero">
+      <p class="etichetta">Portfolio</p>
+      <h1>Owen Reyes</h1>
+      <p class="sottotitolo">
+        Third-year Computer Science student. Passionate about programming,
+        networking, and everything that can be built with code.
+      </p>
+      <div class="tag-list">
+        <span class="tag">Fashion</span>
+        <span class="tag">Web Design</span>
+        <span class="tag">Cycling</span>
+        <span class="tag">Milan</span>
+      </div>
+    </section>
+
+    <!-- ABOUT ME -->
+    <section id="about">
+      <p class="etichetta">About me</p>
+      <h2>Personal information</h2>
+      <p style="margin-top: 16px;">
+        My name is Owen Reyes, I'm 17 years old and I'm in the third year
+        of the Computer Science programme. I'm curious,
+        I enjoy solving problems and learning new things.
+        In my free time I like browsing the Internet looking for new clothes and ideas.
+      </p>
+      <div class="griglia-2col" style="margin-top: 40px;">
+        <div>
+          <div class="info-riga">
+            <span>Name</span>
+            <span>Owen Reyes</span>
+          </div>
+          <div class="info-riga">
+            <span>Age</span>
+            <span>17 years old</span>
+          </div>
+          <div class="info-riga">
+            <span>City</span>
+            <span>Milan</span>
+          </div>
+          <div class="info-riga">
+            <span>Languages</span>
+            <span>Italian, English, Filipino, French (Basic)</span>
+          </div>
+        </div>
+        <div>
+          <div class="info-riga">
+            <span>School</span>
+            <span>Immaginazione e Lavoro</span>
+          </div>
+          <div class="info-riga">
+            <span>Programme</span>
+            <span>Computer Science</span>
+          </div>
+          <div class="info-riga">
+            <span>Year</span>
+            <span>Third year</span>
+          </div>
+          <div class="info-riga">
+            <span>School year</span>
+            <span>2025 / 2026</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <p class="etichetta">Skills</p>
+      <h2>What I can do</h2>
+      <p style="margin-top: 8px;">Technical skills acquired during the school year.</p>
+      <div class="competenze-griglia">
+        <div class="competenza-card">
+          <h3>HTML / CSS</h3>
+          <div class="barra-contenitore"><div class="barra" style="width: 65%"></div></div>
+          <p class="livello-label">Basic / Intermediate</p>
+        </div>
+        <div class="competenza-card">
+          <h3>Python</h3>
+          <div class="barra-contenitore"><div class="barra" style="width: 30%"></div></div>
+          <p class="livello-label">Basic</p>
+        </div>
+        <div class="competenza-card">
+          <h3>Arduino</h3>
+          <div class="barra-contenitore"><div class="barra" style="width: 20%"></div></div>
+          <p class="livello-label">Basic</p>
+        </div>
+        <div class="competenza-card">
+          <h3>Networking</h3>
+          <div class="barra-contenitore"><div class="barra" style="width: 40%"></div></div>
+          <p class="livello-label">Basic</p>
+        </div>
+        <div class="competenza-card">
+          <h3>Operating Systems</h3>
+          <div class="barra-contenitore"><div class="barra" style="width: 45%"></div></div>
+          <p class="livello-label">Basic / Intermediate</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <p class="etichetta">Projects</p>
+      <h2>What I've built</h2>
+      <p style="margin-top: 8px;">Projects developed during the school year.</p>
+
+      <div class="progetti-lista">
+
+        <!-- PROJECT 1 — Semaforo -->
+        <div class="progetto-card">
+          <div class="progetto-immagine">
+            <img src="./img/bersaglio.png" alt="Target" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div class="progetto-corpo">
+            <h2>Semaforo</h2>
+            <p style="margin-top: 8px;">
+              The goal of the game is to hit a target that appears in random positions on the screen
+              in the shortest time possible, earning points for each successful hit.
+            </p>
+            <div class="progetto-meta">
+              <span class="badge">Python</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJECT 2 — Game Menu -->
+        <div class="progetto-card">
+          <div class="progetto-immagine">
+            <img src="./img/AQW.jpg" alt="Game Menu" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div class="progetto-corpo">
+            <h2>Game Menu</h2>
+            <p style="margin-top: 8px;">
+              Using GoDot, I recreated the menu of an existing game with full gameplay.
+              The game is called "Adventure Quest Worlds", a 2D MMORPG.
+            </p>
+            <div class="progetto-meta">
+              <span class="badge">C# (C Sharp)</span>
+              <span class="badge">C++</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJECT 3 — Dodge The Bullies (with button!) -->
+        <div class="progetto-card">
+          <div class="progetto-immagine">
+            <img src="./img/Bully.png" alt="Dodge The Bullies" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div class="progetto-corpo">
+            <h2>Dodge The Bullies</h2>
+            <p style="margin-top: 8px;">
+              An arcade game developed in pure HTML5 and JavaScript. The player controls a character
+              who must dodge bullies advancing towards them, collecting useful items to survive as long
+              as possible. The game progressively increases in difficulty with each round, testing the
+              player's reflexes. Created as a school project to address the topic of bullying in an
+              interactive and meaningful way.
+            </p>
+            <div class="progetto-meta">
+              <span class="badge">HTML5</span>
+              <span class="badge">JavaScript</span>
+              <span class="badge">Canvas API</span>
+            </div>
+            <a href="./schiva_i_bulli.html" class="btn-gioca" target="_blank">Play it →</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- JOURNEY -->
+    <section id="journey">
+      <p class="etichetta">Journey</p>
+      <h2>My school journey</h2>
+      <p style="margin-top: 16px;">
+        The most significant event of my journey was changing schools. My fresh start dates back to
+        <strong>March 2024</strong>: I'm convinced that, without that choice, I probably would not have
+        continued studying. I changed because I no longer felt motivated and was struggling to keep going —
+        I needed an environment where I felt at ease and could start over.
+      </p>
+      <p style="margin-top: 12px;">
+        The transfer was an important turning point, not just academically but personally too: it gave me
+        new motivation and new opportunities. Another significant moment was the <strong>third-year work
+        placement</strong>, during which I learned first-hand how a warehouse operates, its logistics
+        and organisation — aspects that connect directly to my dream: creating my own clothing brand.
+      </p>
+      <p style="margin-top: 12px;">
+        Among the most positive aspects are the people: friendly and supportive teachers and friends who
+        have been there for me during difficult times. One of the biggest challenges was learning how to
+        communicate with adults, a problem that began back in high school. Thanks to my experience at
+        Immaginazione e Lavoro, I worked on this, gradually improving my confidence and interpersonal skills.
+      </p>
+      <p style="margin-top: 12px;">
+        Every experience, positive or negative, has helped me grow. My future goal is to create a clothing
+        brand, and to get there I would like to do internships in <strong>Digital Marketing</strong>,
+        <strong>E-Commerce</strong> or as a <strong>Graphic Designer</strong>.
+      </p>
+      <div style="margin-top: 32px;">
+        <img src="./img/Percorso-Scolastico.png" alt="Owen Reyes school journey"
+          style="width: 100%; border-radius: 8px; border: 1px solid var(--bordo, #e2e8f0);" />
+      </div>
+    </section>
+
+    <!-- CV -->
+    <section id="cv">
+      <p class="etichetta">Curriculum Vitae</p>
+      <h2>My CV</h2>
+      <p style="margin-top: 8px;">Education, experience and skills in concise format.</p>
+      <div class="cv-download-bar">
+        <p>Download the full version as a PDF.</p>
+        <a href="./OWEN HARVEY REYES - CV Finale.pdf" download="OwenReyes_CV.pdf" class="btn-scarica">
+          ↓ &nbsp;Download CV (PDF)
+        </a>
+      </div>
+      <div class="cv-blocco">
+        <p class="cv-blocco-titolo">Education</p>
+        <div class="cv-riga">
+          <span class="cv-periodo">2024 – present</span>
+          <div class="cv-contenuto">
+            <h3>IT Operator</h3>
+            <span class="cv-luogo">Immaginazione e Lavoro — Milan</span>
+            <p>Three-year Computer Science programme. Python programming, web design, Arduino, networking and operating systems.</p>
+          </div>
+        </div>
+        <div class="cv-riga">
+          <span class="cv-periodo">2023 – 2024</span>
+          <div class="cv-contenuto">
+            <h3>Scientific High School</h3>
+            <span class="cv-luogo">Giulio Natta — Milan</span>
+            <p>Five-year scientific programme. Latin, Physics.</p>
+          </div>
+        </div>
+        <div class="cv-riga">
+          <span class="cv-periodo">2018 – 2023</span>
+          <div class="cv-contenuto">
+            <h3>Middle School Diploma</h3>
+            <span class="cv-luogo">Lower Secondary School — Milan</span>
+            <p>Grade: 8/10.</p>
+          </div>
+        </div>
+      </div>
+      <div class="cv-blocco">
+        <p class="cv-blocco-titolo">Experience</p>
+        <div class="cv-riga">
+          <span class="cv-periodo">2025–2026</span>
+          <div class="cv-contenuto">
+            <h3>Internship / School Project</h3>
+            <span class="cv-luogo">Prestige Group S.r.L — Milan</span>
+            <p>Repair and refurbishment of electronic devices.</p>
+          </div>
+        </div>
+        <div class="cv-riga">
+          <span class="cv-periodo">2025</span>
+          <div class="cv-contenuto">
+            <h3>Internship / School Project</h3>
+            <span class="cv-luogo">CM.Consulting — Milan</span>
+            <p>Human resources agency, assistance with recruitment and interviews. Excel and Word.</p>
+          </div>
+        </div>
+      </div>
+      <div class="cv-blocco">
+        <p class="cv-blocco-titolo">Technical skills</p>
+        <div class="cv-skill-lista">
+          <span class="cv-skill">Python</span>
+          <span class="cv-skill">HTML / CSS</span>
+          <span class="cv-skill">Arduino (C++)</span>
+          <span class="cv-skill">Pygame</span>
+          <span class="cv-skill">TCP/IP Networking</span>
+          <span class="cv-skill">Windows</span>
+        </div>
+      </div>
+      <div class="cv-blocco">
+        <p class="cv-blocco-titolo">Languages</p>
+        <div class="cv-riga">
+          <span class="cv-periodo">Filipino</span>
+          <div class="cv-contenuto"><h3>Native language</h3></div>
+        </div>
+        <div class="cv-riga">
+          <span class="cv-periodo">Italian</span>
+          <div class="cv-contenuto"><h3>Level B2 — school</h3></div>
+        </div>
+        <div class="cv-riga">
+          <span class="cv-periodo">English</span>
+          <div class="cv-contenuto"><h3>Level B2 — school</h3></div>
+        </div>
+        <div class="cv-riga">
+          <span class="cv-periodo">French</span>
+          <div class="cv-contenuto"><h3>Level A2 — basic</h3></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTS -->
+    <section id="contacts">
+      <p class="etichetta">Contacts</p>
+      <h2>Where to find me</h2>
+      <p style="margin-top: 8px;">You can reach me by email or find my work online.</p>
+      <div class="contatti-lista">
+        <a href="mailto:owenreyes1902@gmail.com" class="contatto-riga">
+          <span class="contatto-icona">Email</span>
+          <span>owenreyes1902@gmail.com</span>
+        </a>
+        <a href="https://github.com/OwenHarveyReyes" class="contatto-riga" target="_blank">
+          <span class="contatto-icona">GitHub</span>
+          <span>github.com/OwenHarveyReyes</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    © 2026 Owen Reyes — School Portfolio
+  </footer>
+
+  <!-- ANIMATED BLURRED BUBBLE BACKGROUND SCRIPT -->
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const blobs = Array.from({ length: 12 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 120 + Math.random() * 200,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      hue: 190 + Math.random() * 40,
+      alpha: 0.03 + Math.random() * 0.05,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.003 + Math.random() * 0.004
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      blobs.forEach(b => {
+        b.phase += b.speed;
+        b.x += b.vx + Math.sin(b.phase) * 0.3;
+        b.y += b.vy + Math.cos(b.phase * 0.7) * 0.3;
+
+        if (b.x < -b.r) b.x = canvas.width + b.r;
+        if (b.x > canvas.width + b.r) b.x = -b.r;
+        if (b.y < -b.r) b.y = canvas.height + b.r;
+        if (b.y > canvas.height + b.r) b.y = -b.r;
+
+        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        grad.addColorStop(0, `hsla(${b.hue}, 80%, 65%, ${b.alpha})`);
+        grad.addColorStop(0.5, `hsla(${b.hue + 15}, 70%, 55%, ${b.alpha * 0.5})`);
+        grad.addColorStop(1, `hsla(${b.hue}, 80%, 65%, 0)`);
+
+        ctx.filter = 'blur(40px)';
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+
+      ctx.filter = 'none';
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+
+</body>
+</html>
